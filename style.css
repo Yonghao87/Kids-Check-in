@@ -224,3 +224,33 @@ body {
 }
 .toast-box.show { opacity: 1; }
 .toast-icon { font-size: 1.4rem; color: #FFD700; }
+/* 管理模态层样式 */
+.admin-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: #fdfdfd; z-index: 2000; display: none; flex-direction: column;
+    animation: slideInRight 0.3s ease;
+}
+@keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
+
+.admin-header {
+    padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;
+    background: #fff; border-bottom: 1px solid #eee;
+}
+.close-btn, .save-btn { background: none; border: none; font-size: 1.1rem; color: #666; cursor: pointer; }
+.save-btn { color: var(--primary); font-weight: bold; }
+
+.admin-content { flex: 1; overflow-y: auto; padding-bottom: 40px; }
+.admin-tabs { display: flex; background: #eee; margin: 15px; border-radius: 10px; padding: 3px; }
+.admin-tab { flex: 1; border: none; padding: 8px; border-radius: 8px; background: none; color: #666; font-weight: bold; }
+.admin-tab.active { background: white; color: var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+
+.admin-item {
+    background: white; margin: 0 15px 10px; padding: 15px; border-radius: 12px;
+    display: flex; align-items: center; gap: 12px; border: 1px solid #f0f0f0;
+}
+.admin-item-info { flex: 1; }
+.admin-item-title { font-weight: bold; font-size: 0.95rem; margin-bottom: 4px; }
+.admin-item-meta { font-size: 0.75rem; color: #999; }
+.admin-actions { display: flex; gap: 15px; color: #999; }
+.admin-actions i:hover { color: var(--primary); }
+.admin-actions .fa-trash-alt:hover { color: #f44336; }

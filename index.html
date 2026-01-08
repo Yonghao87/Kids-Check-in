@@ -165,5 +165,21 @@
     </div>
 
     <script src="script.js"></script>
+    <div id="admin-overlay" class="admin-overlay">
+    <div class="admin-header">
+        <button class="close-btn" onclick="closeAdmin()"><i class="fas fa-times"></i></button>
+        <h2 id="admin-title">任务管理</h2>
+        <button class="save-btn" onclick="addNewItemInAdmin()"><i class="fas fa-plus"></i> 添加</button>
+    </div>
+    
+    <div class="admin-content">
+        <div class="admin-tabs">
+            <button class="admin-tab active" id="tab-sub" onclick="switchAdminTab('sub')">任务项</button>
+            <button class="admin-tab" id="tab-gift" onclick="switchAdminTab('gift')">礼物项</button>
+        </div>
+        <div id="admin-list-container" class="admin-list">
+            </div>
+    </div>
+</div>
 </body>
 </html>
