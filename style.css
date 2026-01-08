@@ -1,20 +1,16 @@
 /* --- 1. 全局与基础设置 --- */
 :root {
-    --bg-body: #FFF6F0; /* 暖白背景，护眼 */
-    --primary: #FF9800; /* 主色调：活力橙 */
-    --text-main: #5D4037; /* 深咖色文字，比纯黑更柔和 */
-    --text-sub: #8D6E63;
-    --safe-bottom: env(safe-area-inset-bottom);
-    --shadow-card: 0 8px 20px rgba(0,0,0,0.06);
-    --shadow-float: 0 10px 30px rgba(255, 152, 0, 0.3);
+    --bg-body: #FFF6F0; /* 暖白背景 */
+    --primary: #FF9800; /* 主题橙色 */
+    --text-main: #3E2723; /* 深咖色文字 */
+    --safe-bottom: env(safe-area-inset-bottom); /* 适配 iPhone 底部黑条 */
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
 body {
-    font-family: "Rounded Mplus 1c", "幼圆", -apple-system, sans-serif;
+    font-family: "Rounded Mplus 1c", "幼圆", sans-serif;
     background-color: var(--bg-body);
-    color: var(--text-main);
     height: 100vh;
     display: flex;
     flex-direction: column;
@@ -26,340 +22,205 @@ body {
 .kid-header {
     padding: 15px 20px;
     padding-top: max(15px, env(safe-area-inset-top));
-    background: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(10px); /* 毛玻璃特效 */
-    border-bottom-left-radius: 30px;
-    border-bottom-right-radius: 30px;
-    box-shadow: 0 4px 20px rgba(255, 215, 0, 0.15);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 20px rgba(255, 152, 0, 0.1);
+    border-bottom-left-radius: 25px;
+    border-bottom-right-radius: 25px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     z-index: 100;
-    position: relative;
 }
 
 .avatar-area { display: flex; align-items: center; gap: 12px; }
 
-.big-avatar {
-    width: 52px; height: 52px;
-    border-radius: 50%;
-    border: 3px solid #fff;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    object-fit: cover;
-    transition: transform 0.3s;
+/* 名字显示优化 */
+.header-info { display: flex; flex-direction: column; }
+.user-name-text { 
+    font-weight: 800; font-size: 1.1rem; color: var(--text-main); 
+    display: flex; align-items: center;
 }
-.big-avatar:active { transform: scale(0.9); }
+.user-name-text::after {
+    content: " 小朋友"; font-size: 0.8rem; color: #8D6E63; margin-left: 4px; font-weight: normal;
+}
+.date-text { font-size: 0.75rem; color: #A1887F; margin-top: 2px; }
 
-.user-name-text { font-weight: 800; font-size: 1.2rem; color: #3E2723; }
-.date-text { font-size: 0.75rem; color: var(--text-sub); margin-top: 2px; }
+/* 头像圆圈容器 */
+.avatar-container {
+    width: 52px; height: 52px; border-radius: 50%;
+    position: relative; background: linear-gradient(135deg, #FFA726, #FF7043);
+    display: flex; align-items: center; justify-content: center;
+    border: 3px solid #fff; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    overflow: hidden; cursor: pointer;
+}
+.big-avatar { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; z-index: 2; transition: opacity 0.3s;}
+.avatar-placeholder { font-size: 1.5rem; color: white; font-weight: bold; z-index: 1; }
 
+/* 皇冠计数器 */
 .crown-counter {
     background: linear-gradient(135deg, #FFC107, #FF9800);
-    color: white;
-    padding: 6px 16px;
-    border-radius: 20px;
-    font-weight: 800;
-    display: flex; align-items: center; gap: 6px;
-    box-shadow: 0 4px 12px rgba(255, 152, 0, 0.4);
-    font-size: 1.1rem;
-    transform: rotate(-2deg); /* 俏皮倾斜 */
-    cursor: pointer;
-    transition: transform 0.2s;
+    color: white; padding: 6px 14px; border-radius: 20px;
+    font-weight: bold; display: flex; align-items: center; gap: 6px;
+    box-shadow: 0 4px 10px rgba(255, 152, 0, 0.3); font-size: 1rem;
+    cursor: pointer; transform: rotate(-2deg);
 }
-.crown-counter:active { transform: scale(0.95) rotate(-2deg); }
+.crown-counter:active { transform: scale(0.95); }
 
-/* --- 3. 主滚动区域 --- */
+/* --- 3. 主滚动区域 (核心修复) --- */
 .main-scroll {
-    flex: 1;
-    overflow-y: auto;
-    overflow-x: hidden;
+    flex: 1; 
+    overflow-y: auto; 
     padding: 20px;
-    padding-bottom: 120px; /* 留出底部导航空间 */
+    /* 关键修复：底部预留足够空间，防止被导航栏挡住卡片 */
+    padding-bottom: calc(90px + var(--safe-bottom)); 
     scroll-behavior: smooth;
 }
 
-/* 视图容器动画 */
-.view-section { display: none; width: 100%; }
-.view-section.active { display: block; animation: slideUp 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.view-section { display: none; width: 100%; animation: slideUp 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+.view-section.active { display: block; }
+@keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-@keyframes slideUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
+.category-title { margin: 25px 0 15px 5px; color: #795548; font-weight: 800; font-size: 1.1rem; letter-spacing: 1px; }
+.grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); gap: 15px; }
 
-.category-title {
-    margin: 25px 0 15px 5px;
-    color: var(--text-sub);
-    font-weight: 800;
-    font-size: 1.1rem;
-    display: flex; align-items: center; gap: 10px;
-    letter-spacing: 1px;
-}
-.category-title::before {
-    content: ""; display: block; width: 6px; height: 18px;
-    background: var(--primary); border-radius: 3px;
-}
-
-.grid-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* 自适应列 */
-    gap: 15px;
-}
-
-/* --- 4. 核心卡片设计 (Card UI) --- */
-
-/* 主题配色变量 */
-.theme-blue   { --bg: #E3F2FD; --border: #90CAF9; --text: #1976D2; --btn: #42A5F5; }
-.theme-purple { --bg: #F3E5F5; --border: #CE93D8; --text: #7B1FA2; --btn: #AB47BC; }
-.theme-green  { --bg: #E8F5E9; --border: #A5D6A7; --text: #388E3C; --btn: #66BB6A; }
-.theme-pink   { --bg: #FCE4EC; --border: #F48FB1; --text: #C2185B; --btn: #EC407A; }
-.theme-orange { --bg: #FFF3E0; --border: #FFCC80; --text: #F57C00; --btn: #FFA726; }
-
+/* --- 4. 卡片样式 --- */
 .kid-card {
-    background: linear-gradient(145deg, #ffffff, var(--bg));
-    border: 2px solid var(--border);
-    border-radius: 24px;
-    padding: 16px 12px;
+    background: white; border-radius: 20px; padding: 15px 10px;
     display: flex; flex-direction: column; align-items: center;
-    position: relative;
-    box-shadow: var(--shadow-card);
-    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); /* 弹性过渡 */
-    cursor: pointer;
-    overflow: hidden; /* 用于流光特效 */
+    position: relative; box-shadow: 0 6px 15px rgba(0,0,0,0.06);
+    transition: all 0.2s; cursor: pointer; border: 2px solid transparent;
+    overflow: hidden;
 }
+.kid-card:active { transform: scale(0.96); box-shadow: none; }
 
-/* 卡片点击反馈：像按键一样下沉 */
-.kid-card:active {
-    transform: scale(0.96) translateY(4px);
-    box-shadow: none;
-    border-color: var(--btn);
-}
+/* 主题色系 */
+.theme-blue { border-color: #90CAF9; background: linear-gradient(to bottom, #E3F2FD, #FFF); }
+.theme-purple { border-color: #CE93D8; background: linear-gradient(to bottom, #F3E5F5, #FFF); }
+.theme-green { border-color: #A5D6A7; background: linear-gradient(to bottom, #E8F5E9, #FFF); }
+.theme-pink { border-color: #F48FB1; background: linear-gradient(to bottom, #FCE4EC, #FFF); }
+.theme-orange { border-color: #FFCC80; background: linear-gradient(to bottom, #FFF3E0, #FFF); }
 
-.card-icon {
-    font-size: 2.2rem;
-    margin-bottom: 8px;
-    color: var(--text);
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
-    transition: transform 0.3s;
-}
-.kid-card:active .card-icon { transform: scale(1.1) rotate(-10deg); }
+.card-icon { font-size: 2rem; margin-bottom: 8px; color: #5D4037; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.1)); }
+.card-title { font-weight: bold; color: #3E2723; margin-bottom: 8px; font-size: 0.95rem; text-align: center; }
 
-.card-title {
-    color: var(--text-main);
-    font-weight: 700;
-    font-size: 1rem;
-    margin-bottom: 10px;
-    text-align: center;
-}
-
-/* 星星容器 */
+/* 星星区域 */
 .stars-box {
-    background: rgba(255,255,255,0.7);
-    border-radius: 12px;
-    padding: 6px;
-    width: 100%;
-    min-height: 38px;
-    margin-bottom: 8px;
-    display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 2px;
+    background: rgba(255,255,255,0.6); border-radius: 10px; padding: 5px;
+    width: 100%; min-height: 32px; margin-bottom: 8px;
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 3px;
 }
+.visual-star { color: #FFC107; font-size: 0.9rem; animation: pop 0.4s; padding: 2px; }
+@keyframes pop { 0% { transform: scale(0); } 70% { transform: scale(1.4); } 100% { transform: scale(1); } }
 
-/* 单个星星动画 */
-.visual-star {
-    color: #FFC107;
-    font-size: 1rem;
-    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.15));
-    /* 星星出现的弹跳动画 */
-    animation: starBounce 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-    cursor: pointer;
-    padding: 2px;
-}
-.visual-star:active { color: #FF5722; transform: scale(0.8); }
-
-@keyframes starBounce {
-    0% { transform: scale(0) rotate(-45deg); opacity: 0; }
-    60% { transform: scale(1.3) rotate(10deg); }
-    100% { transform: scale(1) rotate(0); opacity: 1; }
-}
-
-.progress-text { font-size: 0.75rem; color: #999; margin-bottom: 10px; }
-
-/* 加分大按钮 */
+.progress-text { font-size: 0.7rem; color: #999; margin-bottom: 8px; }
 .add-big-btn {
-    width: 48px; height: 48px;
-    background: var(--btn);
-    color: white;
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.4rem;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-    border: 2px solid rgba(255,255,255,0.4);
+    width: 40px; height: 40px; border-radius: 50%; background: var(--primary); color: white;
+    display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
+    box-shadow: 0 4px 8px rgba(255, 152, 0, 0.3); border: 2px solid rgba(255,255,255,0.3);
 }
 
-/* --- 5. 特效动画类 (由 JS 动态添加) --- */
-
-/* 满分流光特效 */
-.kid-card.has-glow {
-    border-color: #FFD700 !important;
-    box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
-}
-
+/* 流光特效 */
+.kid-card.has-glow { border-color: #FFD700 !important; box-shadow: 0 0 15px rgba(255, 215, 0, 0.3); }
 .card-glow-overlay {
-    position: absolute;
-    top: 0; left: -100%;
-    width: 50%; height: 100%;
+    position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
     background: linear-gradient(to right, transparent, rgba(255,255,255,0.8), transparent);
-    transform: skewX(-25deg);
-    animation: lightSweep 2.5s infinite;
-    pointer-events: none;
+    transform: skewX(-25deg); animation: lightSweep 2.5s infinite; pointer-events: none;
 }
+@keyframes lightSweep { 0% { left: -100%; } 100% { left: 200%; } }
 
-@keyframes lightSweep {
-    0% { left: -100%; }
-    50%, 100% { left: 200%; }
-}
-
-/* 庆祝动画（换皇冠时） */
-.celebrate { animation: cardJump 0.6s ease; }
-@keyframes cardJump {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.1) translateY(-10px); filter: brightness(1.1); }
-}
-
-/* --- 6. 礼物列表样式 --- */
-.gift-list { display: flex; flex-direction: column; gap: 15px; }
-
-.gift-item {
-    background: white;
-    border-radius: 20px;
-    padding: 15px 20px;
-    display: flex; align-items: center; justify-content: space-between;
-    box-shadow: var(--shadow-card);
-    border: 1px solid #f0f0f0;
-}
-
-.gift-cost {
-    display: inline-block;
-    background: #FFF8E1; color: #FF8F00;
-    padding: 4px 10px; border-radius: 8px;
-    font-size: 0.85rem; font-weight: bold;
-    margin-top: 5px;
-}
-
-.exchange-btn {
-    background: linear-gradient(135deg, #66BB6A, #43A047);
-    color: white; border: none;
-    padding: 10px 20px; border-radius: 25px;
-    font-weight: bold; font-size: 0.9rem;
-    box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
-    transition: all 0.2s;
-}
-.exchange-btn:active { transform: scale(0.95); }
-.exchange-btn:disabled {
-    background: #E0E0E0; color: #9E9E9E; box-shadow: none;
-}
-
-/* --- 7. 管理菜单样式 --- */
-.menu-item {
-    background: white;
-    margin-bottom: 12px;
-    padding: 18px;
-    border-radius: 20px;
-    display: flex; justify-content: space-between; align-items: center;
-    box-shadow: var(--shadow-card);
-    transition: transform 0.2s;
-}
-.menu-item:active { transform: scale(0.98); }
-
-.menu-item.highlight {
-    background: linear-gradient(135deg, #FFF3E0, #FFFFFF);
-    border: 2px solid #FFCC80;
-}
-
-.menu-left { display: flex; align-items: center; gap: 18px; }
-.menu-left i { font-size: 1.6rem; width: 30px; text-align: center; }
-.menu-title { font-weight: bold; font-size: 1.05rem; color: #333; }
-.menu-desc { font-size: 0.8rem; color: #999; margin-top: 2px; }
-
-/* --- 8. 底部导航栏 (Bottom Nav) --- */
+/* --- 5. 底部导航 (美化修复) --- */
 .bottom-nav {
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(255,255,255,0.95);
     backdrop-filter: blur(10px);
     height: calc(70px + var(--safe-bottom));
     padding-bottom: var(--safe-bottom);
-    position: fixed; bottom: 0; left: 0; right: 0;
+    position: fixed; bottom: 0; width: 100%;
     display: flex; justify-content: space-around; align-items: center;
-    border-top-left-radius: 30px; border-top-right-radius: 30px;
+    border-top-left-radius: 25px; border-top-right-radius: 25px;
     box-shadow: 0 -5px 25px rgba(0,0,0,0.05);
     z-index: 900;
 }
-
 .nav-btn {
     display: flex; flex-direction: column; align-items: center; gap: 5px;
-    color: #BDBDBD; background: none; border: none;
-    font-size: 0.75rem; width: 60px;
-    transition: all 0.3s;
+    background: none; border: none; color: #BDBDBD; width: 60px;
+    transition: all 0.2s;
 }
+.nav-btn i { font-size: 1.5rem; transition: transform 0.2s; }
+.nav-btn span { font-size: 0.7rem; }
 
-.nav-btn i { font-size: 1.6rem; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-
-/* 选中状态 */
+/* 选中状态优化 */
 .nav-btn.active { color: var(--primary); }
-.nav-btn.active i {
-    transform: translateY(-8px) scale(1.2);
-    color: var(--primary);
-    filter: drop-shadow(0 4px 8px rgba(255, 152, 0, 0.3));
-}
+.nav-btn.active i { transform: translateY(-5px); filter: drop-shadow(0 4px 6px rgba(255, 152, 0, 0.3)); }
 .nav-btn.active span { font-weight: bold; }
 
-/* --- 9. Toast 提示框 --- */
-.toast-box {
-    position: fixed; top: 45%; left: 50%;
-    transform: translate(-50%, -50%) scale(0.9);
-    background: rgba(40, 40, 40, 0.9);
-    color: white;
-    padding: 16px 28px;
-    border-radius: 40px;
-    display: flex; align-items: center; gap: 12px;
-    z-index: 2000;
-    opacity: 0; pointer-events: none;
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    white-space: nowrap;
+/* --- 6. 菜单与礼物列表 --- */
+.menu-item {
+    background: white; padding: 16px; border-radius: 18px; margin-bottom: 12px;
+    display: flex; justify-content: space-between; align-items: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.03); transition: transform 0.2s;
 }
-.toast-box.show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-.toast-icon { font-size: 1.6rem; color: #FFD700; }
-/* 头像容器 */
-.avatar-container {
-    width: 52px;
-    height: 52px;
-    border-radius: 50%;
-    position: relative;
-    background: linear-gradient(135deg, #FF9800, #FF5722); /* 默认橙色渐变 */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 3px solid #fff;
+.menu-item:active { transform: scale(0.98); }
+.menu-item.highlight { background: #FFF8E1; border: 1px solid #FFECB3; }
+
+.menu-left { display: flex; align-items: center; gap: 15px; }
+.menu-left i { width: 30px; text-align: center; font-size: 1.3rem; }
+.menu-title { font-weight: bold; color: #333; font-size: 1rem; }
+.menu-desc { font-size: 0.75rem; color: #999; margin-top: 2px; }
+
+.gift-item {
+    background: white; padding: 15px; border-radius: 15px; margin-bottom: 12px;
+    display: flex; justify-content: space-between; align-items: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid #f9f9f9;
+}
+.gift-cost { background: #FFF3E0; color: #FF8F00; padding: 4px 8px; border-radius: 6px; font-size: 0.85rem; font-weight: bold; margin-top: 4px; display: inline-block;}
+.exchange-btn {
+    background: #4CAF50; color: white; border: none; padding: 8px 18px;
+    border-radius: 20px; font-size: 0.9rem; font-weight: bold;
+    box-shadow: 0 4px 8px rgba(76, 175, 80, 0.2);
+}
+.exchange-btn:active { transform: scale(0.95); }
+.exchange-btn:disabled { background: #E0E0E0; color: #9E9E9E; box-shadow: none; }
+
+/* --- 7. 数据备份与日志样式 (V3.0 新增) --- */
+.data-actions { display: flex; gap: 12px; margin-bottom: 25px; }
+.action-btn { 
+    flex: 1; padding: 14px; border: none; border-radius: 15px; 
+    color: white; font-weight: bold; font-size: 0.9rem;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    overflow: hidden;
-    cursor: pointer;
 }
+.action-btn:active { transform: scale(0.96); opacity: 0.9; }
+.export-btn { background: linear-gradient(135deg, #42A5F5, #2196F3); }
+.import-btn { background: linear-gradient(135deg, #78909C, #607D8B); }
 
-/* 真实头像图片 */
-.big-avatar {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 2;
-    transition: opacity 0.3s;
+/* 成长日志列表 */
+.history-container {
+    background: white; border-radius: 15px; padding: 15px; margin-bottom: 20px;
+    max-height: 300px; overflow-y: auto; border: 1px solid #eee;
+    animation: fadeIn 0.3s;
 }
+.history-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 0; border-bottom: 1px solid #f5f5f5; font-size: 0.9rem;
+}
+.history-item:last-child { border-bottom: none; }
+.history-time { color: #999; font-size: 0.75rem; width: 80px; }
+.history-content { color: #333; flex: 1; margin-right: 10px; }
+.history-score { font-weight: bold; font-family: monospace; font-size: 1rem; }
+.score-plus { color: #4CAF50; }
+.score-minus { color: #F44336; }
 
-/* 默认占位文字（名字首字母） */
-.avatar-placeholder {
-    font-size: 1.5rem;
-    color: white;
-    font-weight: bold;
-    z-index: 1;
+/* 底部版本号 */
+.version-info { text-align: center; color: #ccc; font-size: 0.7rem; margin-top: 30px; margin-bottom: 10px; }
+
+/* --- 8. Toast 提示框 --- */
+.toast-box {
+    position: fixed; top: 40%; left: 50%; transform: translate(-50%, -50%);
+    background: rgba(0,0,0,0.85); color: white; padding: 14px 28px;
+    border-radius: 40px; display: flex; align-items: center; gap: 10px;
+    opacity: 0; pointer-events: none; transition: opacity 0.3s; z-index: 2000;
+    white-space: nowrap; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
 }
+.toast-box.show { opacity: 1; }
+.toast-icon { font-size: 1.4rem; color: #FFD700; }

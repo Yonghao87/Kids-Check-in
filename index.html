@@ -3,27 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>星星大作战</title>
-    
+    <title>星星大作战 v3.0</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#FF9800">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="星星大作战">
-    <link rel="apple-touch-icon" href="https://via.placeholder.com/192/FF9800/ffffff?text=Star">
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-    
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <header class="kid-header">
-        <div class="avatar-container" onclick="uploadAvatarClick()">
-    <img src="" class="big-avatar" id="userAvatar" onerror="this.style.opacity='0'">
-    <div class="avatar-placeholder" id="avatarLetter">?</div>
-</div>
+        <div class="avatar-area">
+            <div class="avatar-container" onclick="uploadAvatarClick()">
+                <img src="" class="big-avatar" id="userAvatar" onerror="this.style.opacity='0'">
+                <div class="avatar-placeholder" id="avatarLetter">?</div>
+            </div>
+            <div class="header-info">
+                <div class="user-name-text"><span id="userNameDisplay">小朋友</span></div>
+                <div class="date-text" id="dateDisplay">加载中...</div>
+            </div>
         </div>
         <div class="crown-counter" onclick="switchTab('gift', document.getElementById('nav-gift-btn'))">
             <i class="fas fa-crown"></i> <span id="totalCrowns">0</span>
@@ -33,79 +33,102 @@
     <main class="main-scroll">
         
         <div id="view-home" class="view-section active">
-            <div class="category-title">学习任务</div>
+            <div class="category-title">📘 学习任务</div>
             <div class="grid-container" id="learning-container"></div>
 
-            <div class="category-title">生活表现</div>
+            <div class="category-title">💖 生活表现</div>
             <div class="grid-container" id="life-container"></div>
         </div>
 
         <div id="view-gift" class="view-section">
-            <div class="category-title">奖励兑换</div>
+            <div class="category-title">🎁 奖励兑换</div>
             <div class="gift-list" id="gift-container"></div>
         </div>
 
         <div id="view-profile" class="view-section">
-            <div class="category-title">个人信息</div>
-            <div class="menu-item" onclick="changeName()">
+            
+            <div class="category-title">📊 成长足迹</div>
+            <div class="menu-item" onclick="toggleHistory()">
                 <div class="menu-left">
-                    <i class="fas fa-id-card" style="color: #9C27B0;"></i>
+                    <i class="fas fa-history" style="color: #673AB7;"></i>
                     <div>
-                        <div class="menu-title">修改我的名字</div>
-                        <div class="menu-desc">点击设置你的专属昵称</div>
+                        <div class="menu-title">查看加分记录</div>
+                        <div class="menu-desc">看看最近都完成了什么</div>
                     </div>
                 </div>
-                <i class="fas fa-edit"></i>
+                <i class="fas fa-chevron-right"></i>
+            </div>
+            <div id="history-list" class="history-container" style="display:none;"></div>
+
+            <div class="category-title">⚙️ 设置中心</div>
+            
+            <div class="menu-item" onclick="changeName()">
+                <div class="menu-left">
+                    <i class="fas fa-user-edit" style="color: #9C27B0;"></i>
+                    <div>
+                        <div class="menu-title">修改名字</div>
+                        <div class="menu-desc">设置你的专属昵称</div>
+                    </div>
+                </div>
+                <i class="fas fa-pen"></i>
             </div>
 
-            <div class="category-title">成就奖励</div>
+            <div class="menu-item" onclick="showManageSubjects()">
+                <div class="menu-left">
+                    <i class="fas fa-tasks" style="color: #4CAF50;"></i>
+                    <div>
+                        <div class="menu-title">任务项管理</div>
+                        <div class="menu-desc">添加、重命名或删除任务</div>
+                    </div>
+                </div>
+                <i class="fas fa-chevron-right"></i>
+            </div>
+
+            <div class="menu-item" onclick="showManageGifts()">
+                <div class="menu-left">
+                    <i class="fas fa-gift" style="color: #E91E63;"></i>
+                    <div>
+                        <div class="menu-title">礼物项管理</div>
+                        <div class="menu-desc">添加、重命名或删除礼物</div>
+                    </div>
+                </div>
+                <i class="fas fa-chevron-right"></i>
+            </div>
+
+            <div class="category-title">💾 数据备份</div>
+            <div class="data-actions">
+                <button class="action-btn export-btn" onclick="exportData()"><i class="fas fa-file-export"></i> 导出数据</button>
+                <button class="action-btn import-btn" onclick="document.getElementById('importFile').click()"><i class="fas fa-file-import"></i> 导入数据</button>
+                <input type="file" id="importFile" style="display:none" onchange="importData(this)">
+            </div>
+
+            <div class="category-title">🏆 荣誉时刻</div>
             <div class="menu-item highlight" onclick="generateCertificate()">
                 <div class="menu-left">
                     <i class="fas fa-certificate" style="color: #FF9800;"></i>
                     <div>
                         <div class="menu-title">生成荣誉证书</div>
-                        <div class="menu-desc">记录你的闪光时刻</div>
+                        <div class="menu-desc">保存当前的星星记录</div>
                     </div>
                 </div>
                 <i class="fas fa-chevron-right"></i>
             </div>
-
-            <div class="category-title">设置中心</div>
-            <div class="menu-item" onclick="showManageSubjects()">
-                <div class="menu-left">
-                    <i class="fas fa-plus-circle" style="color: #4CAF50;"></i>
-                    <div>
-                        <div class="menu-title">管理科目</div>
-                        <div class="menu-desc">添加或编辑学习/生活任务</div>
-                    </div>
-                </div>
-                <i class="fas fa-chevron-right"></i>
-            </div>
-
-            <div class="menu-item" onclick="uploadAvatarClick()">
-                <div class="menu-left">
-                    <i class="fas fa-camera" style="color: #2196F3;"></i>
-                    <div>
-                        <div class="menu-title">更换头像</div>
-                        <div class="menu-desc">拍一张漂亮的照片</div>
-                    </div>
-                </div>
-                <input type="file" id="avatarInput" style="display:none" accept="image/*" onchange="handleAvatarUpload(this)">
-            </div>
-
-            <div class="menu-item" onclick="resetData()" style="margin-top: 40px; border: 1px dashed #FFCDD2;">
+            
+            <div class="menu-item" onclick="resetData()" style="margin-top: 30px; border: 1px dashed #FFCDD2;">
                 <div class="menu-left">
                     <i class="fas fa-trash-alt" style="color: #EF5350;"></i>
                     <div class="menu-title" style="color: #EF5350;">重置所有数据</div>
                 </div>
             </div>
+            
+            <div class="version-info">Ver 3.0</div>
         </div>
     </main>
 
     <nav class="bottom-nav">
         <button class="nav-btn active" id="nav-home-btn" onclick="switchTab('home', this)">
             <i class="fas fa-star"></i>
-            <span>挣星星</span>
+            <span>赚星星</span>
         </button>
         <button class="nav-btn" id="nav-gift-btn" onclick="switchTab('gift', this)">
             <i class="fas fa-gift"></i>
@@ -117,31 +140,29 @@
         </button>
     </nav>
 
-    <div id="cert-template" style="position: fixed; left: -9999px; top: 0; width: 350px; background: white; padding: 40px; text-align: center; border: 15px double #FFD700; border-radius: 5px;">
-        <h1 style="color: #D32F2F; margin-bottom: 20px;">荣誉证书</h1>
-        <p style="text-align: left; font-size: 1.2rem;">亲爱的 <b id="cert-user-name">小朋友</b>：</p>
-        <p style="line-height: 1.8; margin: 20px 0; text-align: left;">你在“星星大作战”任务中表现出色，凭借勤奋和努力，累计获得了丰厚的成果，特发此证，以资鼓励！</p>
-        <div style="margin: 30px 0;">
-            <span style="font-size: 4rem;">👑</span>
-            <div style="font-size: 2rem; font-weight: bold; color: #FF9800;"><span id="cert-crowns">0</span> 颗皇冠</div>
+    <div id="cert-template" style="position: fixed; left: -9999px; top: 0; width: 400px; background: white; padding: 40px; text-align: center; border: 20px solid #FFD700; border-radius: 10px;">
+        <div style="border: 2px solid #FFD700; padding: 20px;">
+            <h1 style="color: #D32F2F; margin-bottom: 30px; font-family: '幼圆'; font-size: 2.5rem;">⭐ 荣誉证书 ⭐</h1>
+            <p style="text-align: left; font-size: 1.4rem;">亲爱的 <b id="cert-user-name" style="color:#2196F3;">小朋友</b>：</p>
+            <p style="line-height: 1.8; margin: 30px 0; text-align: left; font-size: 1.2rem;">你在最近的表现中非常出色！通过不懈的努力，你已经收集了：</p>
+            <div style="display:flex; justify-content:space-around; margin: 40px 0;">
+                <div>
+                    <div style="font-size: 3rem;">👑</div>
+                    <div style="font-size: 1.5rem; color:#FF9800; font-weight:bold;"><span id="cert-crowns">0</span> 个皇冠</div>
+                </div>
+                <div>
+                    <div style="font-size: 3rem;">⭐</div>
+                    <div style="font-size: 1.5rem; color:#FF9800; font-weight:bold;"><span id="cert-stars">0</span> 颗星星</div>
+                </div>
+            </div>
+            <p style="text-align: right; color: #888; font-size: 1rem; margin-top: 50px;" id="cert-date"></p>
         </div>
-        <p style="text-align: right; color: #888; font-size: 0.9rem;" id="cert-date"></p>
     </div>
 
     <div class="toast-box" id="toast">
         <i class="fas fa-star toast-icon"></i>
         <span id="toast-msg"></span>
     </div>
-
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(reg => console.log('PWA就绪'))
-                    .catch(err => console.error('PWA失败', err));
-            });
-        }
-    </script>
 
     <script src="script.js"></script>
 </body>
